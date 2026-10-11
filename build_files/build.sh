@@ -24,7 +24,8 @@ dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/te
 dnf5 config-manager enable terra terra-extras terra-mesa
 
 # Hermes
-dnf5 -y install jq # in aurora already, just to be safe
+# jq in aurora already, just to be safe
+dnf5 -y install dkms jq
 dnf5 -y install "$(curl -s https://api.github.com/repos/MrOz59/Hermes/releases/latest \
     | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
