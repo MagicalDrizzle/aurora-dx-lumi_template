@@ -12,12 +12,13 @@ cp -avf "/ctx/system_files"/. /
 # `:` == `true`
 # `x || :` == `x || true` to ignore command failure
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
+echo defaultyes=True >> /etc/dnf/dnf.conf
 
 # RPM Fusion
 dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"${fedora_ver}".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"${fedora_ver}".noarch.rpm
 dnf5 config-manager enable fedora-cisco-openh264
 dnf5 config-manager enable rpmfusion-free rpmfusion-free-updates rpmfusion-nonfree rpmfusion-nonfree-updates
-dnf5 install rpmfusion-\*-appstream-data
+dnf5 -y install rpmfusion-\*-appstream-data
 # Terra
 dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-release-extras terra-release-mesa
 dnf5 config-manager enable terra-release terra-release-extras terra-release-mesa
@@ -87,7 +88,6 @@ dnf5 config-manager enable adoptium-temurin-java-repository
 dnf5 -y install temurin-25-jdk
 
 # Other softwares
-echo defaultyes=True | tee -a /etc/dnf/dnf.conf
 systemctl enable podman.socket
 dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 byebyebios efivar pesign sbsigntools smbios-utils coreboot-utils-all \
