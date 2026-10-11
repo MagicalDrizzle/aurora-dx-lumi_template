@@ -48,7 +48,7 @@ make modules-install KERNELRELEASE="${kver}" DESTDIR=/
 
 # ProtonVPN
 dnf5 -y install https://repo.protonvpn.com/fedora-"${fedora_ver}"-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.4-1.noarch.rpm
-dnf5 -y install proton-vpn-cli --from-repo=protonvpn-fedora-stable
+dnf5 -y install proton-vpn-cli --from-repo=protonvpn-fedora-stable || true # systemd start fail on build
 dnf5 -y install proton-vpn-qt-app
 dnf5 config-manager disable protonvpn-fedora-stable
 
