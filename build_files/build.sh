@@ -21,7 +21,7 @@ dnf5 config-manager enable rpmfusion-free rpmfusion-free-updates rpmfusion-nonfr
 dnf5 -y install rpmfusion-\*-appstream-data
 # Terra
 dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-release-extras terra-release-mesa
-dnf5 config-manager enable terra-release terra-release-extras terra-release-mesa
+dnf5 config-manager enable terra terra-extras terra-mesa
 
 # Hermes
 dnf5 -y install jq # in aurora already, just to be safe
