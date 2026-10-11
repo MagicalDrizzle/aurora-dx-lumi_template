@@ -69,6 +69,9 @@ jobs:
       # This actually builds the container image
       - name: Build Image
         id: build-image
+        env:
+          SB_KEY: ${{ secrets.SB_KEY }}
+          SB_CERT: ${{ secrets.SB_CERT }}
         run: |
           just build \
             ${IMAGE_NAME} \

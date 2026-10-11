@@ -96,9 +96,9 @@ sudoif command *args:
 build $target_image=image_name $tag=default_tag:
     #!/usr/bin/env bash
 
-    set -euox pipefail
+    set -euo pipefail
 
-    BUILD_ARGS=()
+    BUILD_ARGS=("--secret=id=SB_KEY,env=SB_KEY" "--secret=id=SB_CERT,env=SB_CERT")
     LABELS=()
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)
