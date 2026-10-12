@@ -31,8 +31,10 @@ dnf5 -y install "$(curl -s https://api.github.com/repos/MrOz59/Hermes/releases/l
     | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
 
-git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
-    -b "$(curl -s 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms
+if ! git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
+    -b "$(curl -s 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms; then
+    git clone https://github.com/MrOz59/Hermes-KMS.git /tmp/hermes-kms
+fi
 
 cd /tmp/hermes-kms
 make modules KERNELRELEASE="${kver}" KDIR="/usr/lib/modules/${kver}/build" && \
