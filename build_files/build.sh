@@ -114,7 +114,7 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 usbview playerctl pyside6-tools ddccontrol ddccontrol-gtk \
                 gparted golly ucblogo vkmark below firejail hardinfo2 \
                 lxqt-admin pcmanfm-qt zswap-cli qt5ct qt6ct accessibility-inspector \
-                android-udev-rules chkconfig cpuinfo plocate
+                android-udev-rules chkconfig cpuinfo plocate micro
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
 printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
