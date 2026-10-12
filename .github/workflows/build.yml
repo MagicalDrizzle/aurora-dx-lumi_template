@@ -72,6 +72,7 @@ jobs:
         env:
           SB_KEY: ${{ secrets.SB_KEY }}
           SB_CERT: ${{ secrets.SB_CERT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just build \
             ${IMAGE_NAME} \

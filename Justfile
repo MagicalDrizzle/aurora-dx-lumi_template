@@ -98,7 +98,7 @@ build $target_image=image_name $tag=default_tag:
 
     set -euo pipefail
 
-    BUILD_ARGS=("--secret=id=SB_KEY,env=SB_KEY" "--secret=id=SB_CERT,env=SB_CERT")
+    BUILD_ARGS=("--secret=id=GH_TOKEN,env=GH_TOKEN" "--secret=id=SB_KEY,env=SB_KEY" "--secret=id=SB_CERT,env=SB_CERT")
     LABELS=()
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)

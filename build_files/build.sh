@@ -11,6 +11,12 @@ cp -avf "/ctx/system_files"/. /
 # Boilerplate
 # `:` == `true`
 # `x || :` == `x || true` to ignore command failure
+curl_gh() {
+  command curl -sL \
+    -H "Authorization: Bearer $(cat /run/secrets/GH_TOKEN)" \
+    -H "Accept: application/vnd.github+json" \
+    "$@"
+}
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
 echo defaultyes=True >> /etc/dnf/dnf.conf
 
@@ -27,12 +33,12 @@ dnf5 config-manager enable terra terra-extras terra-mesa
 kver="$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | sort -V | tail -n1)"
 # everything in aurora already, just to be safe
 dnf5 -y install jq "kernel-devel-${kver}" gcc make elfutils-libelf-devel openssl-devel
-dnf5 -y install "$(curl -s https://api.github.com/repos/MrOz59/Hermes/releases/latest \
+dnf5 -y install "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
     | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
 
 if ! git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
-    -b "$(curl -s 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms; then
+    -b "$(curl_gh 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms; then
     git clone https://github.com/MrOz59/Hermes-KMS.git /tmp/hermes-kms
 fi
 
@@ -65,7 +71,7 @@ if dnf5 -y install nohang-nightly nohang-nightly-desktop; then
 fi
 
 # RStudio
-RS_VER=$(curl -sL https://api.github.com/repos/rstudio/rstudio/tags | jq .[0].name)
+RS_VER=$(curl_gh https://api.github.com/repos/rstudio/rstudio/tags | jq .[0].name)
 RS_NAME=${RS_VER:2:-1}
 dnf5 -y install https://download1.rstudio.org/electron/rhel9/x86_64/rstudio-"${RS_NAME/+/-}"-x86_64.rpm
 

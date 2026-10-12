@@ -36,6 +36,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=SB_KEY \
     --mount=type=secret,id=SB_CERT \
+    --mount=type=secret,id=GH_TOKEN \
     /ctx/build.sh
 
 ### LINTING
