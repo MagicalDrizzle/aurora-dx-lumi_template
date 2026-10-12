@@ -51,7 +51,7 @@ fi
 cd /tmp/hermes-kms
 make modules KERNELRELEASE="${kver}" KDIR="/usr/lib/modules/${kver}/build" && \
 make modules-install KERNELRELEASE="${kver}" DESTDIR=/
-"/usr/lib/modules/${kver}/build/scripts/sign-file" sha256 /run/secrets/SB_KEY /run/secrets/SB_CERT /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
+"/usr/lib/modules/${kver}/build/scripts/sign-file" sha512 /run/secrets/SB_KEY /run/secrets/SB_CERT /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
 
 ### Gaming
 #dnf5 -y copr enable faugus/faugus-launcher
