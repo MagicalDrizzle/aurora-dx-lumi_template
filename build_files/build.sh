@@ -17,8 +17,14 @@ curl_gh() {
     -H "Accept: application/vnd.github+json" \
     "$@"
 }
+create() {
+    if ! [[ -e "${folder}" ]] ; then
+        mkdir -p "${folder}"
+        touch "${folder}/${file}"
+    fi
+}
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
-echo defaultyes=True >> /etc/dnf/dnf.conf
+printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
 
 # RPM Fusion
 dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"${fedora_ver}".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"${fedora_ver}".noarch.rpm
@@ -110,16 +116,11 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 lxqt-admin pcmanfm-qt zswap-cli qt5ct qt6ct accessibility-inspector \
                 android-udev-rules chkconfig cpuinfo plocate
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
-
+# pesign doesn't have sysusers, fixed in F45
+printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
 # KDE customization
 systemctl enable systemd-sysext || true
 systemd-sysext unmerge || true
-create() {
-    if ! [[ -e "${folder}" ]] ; then
-        mkdir -p "${folder}"
-        touch "${folder}/${file}"
-    fi
-}
 ################
 origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
 folder=/etc/extensions/desktop-italics/${origin}
@@ -130,7 +131,7 @@ perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" | tee "${folde
 folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
 file=extension-release.desktop-italics
 create
-echo ID=_any | tee "${folder}/${file}" >/dev/null
+printf '%s\n' ID=_any | tee "${folder}/${file}" >/dev/null
 ################
 origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
 folder=/etc/extensions/lockscreen-unblur/${origin}
@@ -141,8 +142,10 @@ perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* Wallpa
 folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
 file=extension-release.lockscreen-unblur
 create
-echo ID=_any | tee "${folder}/${file}" >/dev/null
+printf '%s\n' ID=_any | tee "${folder}/${file}" >/dev/null
 ################
 systemd-sysext merge || true
 # End KDE customization
+# cleanup
+rm -rf /{tmp,var,run}/*
 ################----PERSONAL-END----################
