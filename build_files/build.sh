@@ -147,5 +147,5 @@ printf '%s\n' ID=_any | tee "${folder}/${file}" >/dev/null
 systemd-sysext merge || true
 # End KDE customization
 # cleanup
-rm -rf /{tmp,var,run}/*
+rm -rf /{tmp,var,run}/* || true
 ################----PERSONAL-END----################
