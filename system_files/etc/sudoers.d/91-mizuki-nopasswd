@@ -1,0 +1,2 @@
+Cmnd_Alias TOOLS = /bin/zswap-cli, /bin/btop
+mizuki misshina = NOPASSWD: TOOLS 
