@@ -24,7 +24,7 @@ create() {
     fi
 }
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
-grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
+grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True >> /etc/dnf/dnf.conf
 
 # RPM Fusion
 dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"${fedora_ver}".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"${fedora_ver}".noarch.rpm
@@ -37,21 +37,16 @@ dnf5 config-manager enable terra terra-extras terra-mesa
 
 # Hermes
 kver="$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | sort -V | tail -n1)"
-# everything in aurora already, just to be safe
-dnf5 -y install jq "kernel-devel-${kver}" gcc make elfutils-libelf-devel openssl-devel
 dnf5 -y install "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
     | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
-
-if ! git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
-    -b "$(curl_gh 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms; then
-    git clone https://github.com/MrOz59/Hermes-KMS.git /tmp/hermes-kms
-fi
-
+git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
+    -b "$(curl_gh 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms
 cd /tmp/hermes-kms
 make modules KERNELRELEASE="${kver}" KDIR="/usr/lib/modules/${kver}/build" && \
 make modules-install KERNELRELEASE="${kver}" DESTDIR=/
-"/usr/lib/modules/${kver}/build/scripts/sign-file" sha512 /run/secrets/SB_KEY /run/secrets/SB_CERT /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
+"/usr/lib/modules/${kver}/build/scripts/sign-file" sha512 /run/secrets/SB_KEY /run/secrets/SB_CERT \
+    /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
 
 ### Gaming
 #dnf5 -y copr enable faugus/faugus-launcher
@@ -77,9 +72,8 @@ if dnf5 -y install nohang-nightly nohang-nightly-desktop; then
 fi
 
 # RStudio
-RS_VER=$(curl_gh https://api.github.com/repos/rstudio/rstudio/tags | jq .[0].name)
-RS_NAME=${RS_VER:2:-1}
-dnf5 -y install https://download1.rstudio.org/electron/rhel9/x86_64/rstudio-"${RS_NAME/+/-}"-x86_64.rpm
+RS_VER=$(curl_gh https://api.github.com/repos/rstudio/rstudio/tags | jq -r '.[0].name')
+dnf5 -y install https://download1.rstudio.org/electron/rhel9/x86_64/rstudio-"${RS_VER/+/-}"-x86_64.rpm
 
 # Beyond Compare
 dnf5 config-manager addrepo --from-repofile=https://www.scootersoftware.com/scootersoftware.repo
@@ -117,7 +111,7 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 android-udev-rules chkconfig cpuinfo plocate micro
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
-[ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
+[ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" > /usr/lib/sysusers.d/pesign.conf
 # KDE customization
 systemctl enable systemd-sysext || true
 systemd-sysext unmerge || true
@@ -126,23 +120,23 @@ origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
 folder=/etc/extensions/desktop-italics/${origin}
 file=FolderItemDelegate.qml
 create
-perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
+perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
 
 folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
 file=extension-release.desktop-italics
 create
-printf '%s\n' ID=_any | tee "${folder}/${file}" >/dev/null
+printf '%s\n' ID=_any > "${folder}/${file}" >/dev/null
 ################
 origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
 folder=/etc/extensions/lockscreen-unblur/${origin}
 file=LockScreenUi.qml
 create
 
-perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
+perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
 folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
 file=extension-release.lockscreen-unblur
 create
-printf '%s\n' ID=_any | tee "${folder}/${file}" >/dev/null
+printf '%s\n' ID=_any > "${folder}/${file}" >/dev/null
 ################
 systemd-sysext merge || true
 # End KDE customization
