@@ -24,7 +24,7 @@ create() {
     fi
 }
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
-printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
+grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
 
 # RPM Fusion
 dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"${fedora_ver}".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"${fedora_ver}".noarch.rpm
