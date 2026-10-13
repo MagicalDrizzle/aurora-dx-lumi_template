@@ -117,7 +117,7 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 android-udev-rules chkconfig cpuinfo plocate micro
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
-printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
+[ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
 # KDE customization
 systemctl enable systemd-sysext || true
 systemd-sysext unmerge || true
