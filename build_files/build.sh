@@ -101,6 +101,9 @@ dnf5 -y install adoptium-temurin-java-repository
 dnf5 config-manager enable adoptium-temurin-java-repository
 dnf5 -y install temurin-25-jdk
 
+# Waydroid
+dnf5 -y install waydroid
+
 # Other softwares
 systemctl enable podman.socket
 dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
