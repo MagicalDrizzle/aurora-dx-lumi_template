@@ -72,7 +72,7 @@ if dnf5 -y install nohang-nightly nohang-nightly-desktop; then
 fi
 
 # RStudio
-RS_VER=$(curl_gh https://api.github.com/repos/rstudio/rstudio/tags | jq -r '.[0].name')
+RS=$(curl_gh https://api.github.com/repos/rstudio/rstudio/tags | jq -r '.[0].name') && RS_VER=${RS:1}
 dnf5 -y install https://download1.rstudio.org/electron/rhel9/x86_64/rstudio-"${RS_VER/+/-}"-x86_64.rpm
 
 # Beyond Compare

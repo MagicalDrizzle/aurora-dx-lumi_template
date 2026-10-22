@@ -1,0 +1,1 @@
+kargs = ["rootflags=noatime,compress-force=zstd:1"]
