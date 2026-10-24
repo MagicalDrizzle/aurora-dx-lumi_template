@@ -58,17 +58,14 @@ make modules-install KERNELRELEASE="${kver}" DESTDIR=/
     /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
 
 ### Gaming
-#dnf5 -y copr enable faugus/faugus-launcher
-#dnf5 -y install faugus-launcher
-#dnf5 config-manager disable copr:copr.fedorainfracloud.org:faugus:faugus-launcher
-#dnf5 -y install steam mangohud gamescope scopebuddy protontricks
+dnf5 -y copr enable faugus/faugus-launcher
+dnf5 -y install faugus-launcher
+dnf5 config-manager disable copr:copr.fedorainfracloud.org:faugus:faugus-launcher
+dnf5 -y install steam mangohud gamescope scopebuddy protontricks
 # ###
 
-# ProtonVPN
-dnf5 -y install https://repo.protonvpn.com/fedora-"${fedora_ver}"-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.4-1.noarch.rpm
-dnf5 -y install proton-vpn-cli --from-repo=protonvpn-fedora-stable || true # systemd start fail on build
-dnf5 -y install proton-vpn-qt-app
-dnf5 config-manager disable protonvpn-fedora-stable
+# ProtonVPN (Terra)
+dnf5 -y install python-proton-vpn-cli proton-vpn-qt-app
 
 # CoolerControl
 if dnf5 -y install coolercontrol coolercontrold; then
@@ -115,12 +112,14 @@ dnf5 -y install waydroid
 
 # Other softwares
 systemctl enable podman.socket
+dnf5 -y swap ddcutil terra-ddcutil
 dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 byebyebios efivar pesign sbsigntools smbios-utils coreboot-utils-all \
-                usbview playerctl pyside6-tools ddccontrol ddccontrol-gtk \
+                usbview playerctl \
                 gparted golly ucblogo vkmark below firejail hardinfo2 \
                 lxqt-admin pcmanfm-qt zswap-cli qt5ct qt6ct accessibility-inspector \
-                android-udev-rules chkconfig cpuinfo plocate micro
+                android-udev-rules chkconfig cpuinfo micro
+                # pyside6-tools
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
 [ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" > /usr/lib/sysusers.d/pesign.conf
@@ -153,5 +152,5 @@ printf '%s\n' ID=_any > "${folder}/${file}" >/dev/null
 systemd-sysext merge || true
 # End KDE customization
 # cleanup
-rm -rf /{tmp,var,run}/* || true
+rm -rf /tmp/*
 ################----PERSONAL-END----################
