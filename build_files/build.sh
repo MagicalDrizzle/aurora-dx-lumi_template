@@ -27,6 +27,35 @@ create() {
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
 grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True >> /etc/dnf/dnf.conf
 
+# KDE customization
+systemctl enable systemd-sysext
+systemd-sysext unmerge
+################
+origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
+folder=/etc/extensions/desktop-italics/${origin}
+file=FolderItemDelegate.qml
+create
+perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
+
+folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
+file=extension-release.desktop-italics
+create
+printf '%s\n' ID=_any > "${folder}/${file}"
+################
+origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
+folder=/etc/extensions/lockscreen-unblur/${origin}
+file=LockScreenUi.qml
+create
+perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
+
+folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
+file=extension-release.lockscreen-unblur
+create
+printf '%s\n' ID=_any > "${folder}/${file}"
+################
+systemd-sysext merge
+# End KDE customization
+
 # RPM Fusion
 dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"${fedora_ver}".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"${fedora_ver}".noarch.rpm
 dnf5 config-manager enable fedora-cisco-openh264
@@ -123,34 +152,6 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
 [ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" > /usr/lib/sysusers.d/pesign.conf
-# KDE customization
-systemctl enable systemd-sysext || true
-systemd-sysext unmerge || true
-################
-origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
-folder=/etc/extensions/desktop-italics/${origin}
-file=FolderItemDelegate.qml
-create
-perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
-
-folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
-file=extension-release.desktop-italics
-create
-printf '%s\n' ID=_any > "${folder}/${file}" >/dev/null
-################
-origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
-folder=/etc/extensions/lockscreen-unblur/${origin}
-file=LockScreenUi.qml
-create
-
-perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
-folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
-file=extension-release.lockscreen-unblur
-create
-printf '%s\n' ID=_any > "${folder}/${file}" >/dev/null
-################
-systemd-sysext merge || true
-# End KDE customization
 # cleanup
 rm -rf /tmp/*
 ################----PERSONAL-END----################
