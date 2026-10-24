@@ -25,7 +25,7 @@ create() {
     fi
 }
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
-grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True >> /etc/dnf/dnf.conf
+grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
 
 # KDE customization
 systemctl enable systemd-sysext
@@ -34,23 +34,23 @@ origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
 folder=/etc/extensions/desktop-italics/${origin}
 file=FolderItemDelegate.qml
 create
-perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
+perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
 
 folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
 file=extension-release.desktop-italics
 create
-printf '%s\n' ID=_any > "${folder}/${file}"
+printf '%s\n' ID=_any | tee "${folder}/${file}"
 ################
 origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
 folder=/etc/extensions/lockscreen-unblur/${origin}
 file=LockScreenUi.qml
 create
-perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" > "${folder}/${file}" >/dev/null
+perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
 
 folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
 file=extension-release.lockscreen-unblur
 create
-printf '%s\n' ID=_any > "${folder}/${file}"
+printf '%s\n' ID=_any | tee "${folder}/${file}"
 ################
 # End KDE customization
 
@@ -116,7 +116,7 @@ if dnf5 -y install bcompare --from-repo=scootersoftware; then
     git clone https://github.com/garfield-ts/BCompare_Keygen.git /tmp/bc_keygen
     python -m venv /tmp/bc_venv && source /tmp/bc_venv/bin/activate
     pip3 install base58==2.1.1 pycryptodome==3.24.0
-    python /tmp/bc_keygen/keygen.py -u Mizuki -c innerworld -s 4462-6498 -n 4464 > /usr/lib64/beyondcompare/BC5Key.txt
+    python /tmp/bc_keygen/keygen.py -u Mizuki -c innerworld -s 4462-6498 -n 4464 | tee /usr/lib64/beyondcompare/BC5Key.txt
     deactivate
 fi
 
@@ -149,7 +149,7 @@ dnf5 -y install gsmartcontrol btrfs-heatmap btrfsmaintenance mmc-utils cmospwd \
                 # pyside6-tools
                 # cmake fakeroot mujs patch pigz rhash (included in brew)
 # pesign doesn't have sysusers, fixed in F45
-[ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" > /usr/lib/sysusers.d/pesign.conf
+[ -f /usr/lib/sysusers.d/pesign.conf ] || printf '%s\n' "u pesign - 'Group for the pesign signing daemon' /run/pesign -" | tee /usr/lib/sysusers.d/pesign.conf
 # cleanup
 rm -rf /tmp/*
 ################----PERSONAL-END----################
