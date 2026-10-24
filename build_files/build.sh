@@ -29,7 +29,6 @@ grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True >> /
 
 # KDE customization
 systemctl enable systemd-sysext
-systemd-sysext unmerge
 ################
 origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
 folder=/etc/extensions/desktop-italics/${origin}
@@ -53,7 +52,7 @@ file=extension-release.lockscreen-unblur
 create
 printf '%s\n' ID=_any > "${folder}/${file}"
 ################
-systemd-sysext merge
+sudo systemd-sysext merge
 # End KDE customization
 
 # RPM Fusion
