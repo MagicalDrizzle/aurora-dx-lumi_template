@@ -52,7 +52,6 @@ file=extension-release.lockscreen-unblur
 create
 printf '%s\n' ID=_any > "${folder}/${file}"
 ################
-sudo systemd-sysext merge
 # End KDE customization
 
 # RPM Fusion
