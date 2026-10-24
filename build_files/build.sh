@@ -19,33 +19,22 @@ curl_gh() {
     "$@"
 }
 create() {
-    if ! [[ -e "${folder}" ]] ; then
-        mkdir -p "${folder}"
-        touch "${folder}/${file}"
+    if ! [[ -e ${folder} ]] ; then
+        mkdir -p ${folder}
+        touch ${folder}/${file}
     fi
 }
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
 grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
 
 # KDE customization
-systemctl enable systemd-sysext
+#systemctl enable systemd-sysext
 ################
-origin=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/
-folder=/etc/extensions/desktop-italics/${origin}
-file=FolderItemDelegate.qml
-create
-perl -p0 -e 's/font.italic/\/\/ font.italic/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
-
-folder=/etc/extensions/desktop-italics/usr/lib/extension-release.d
-file=extension-release.desktop-italics
-create
-printf '%s\n' ID=_any | tee "${folder}/${file}"
+curl -sL -o /tmp/symlinks-italic.patch https://invent.kde.org/plasma/plasma-desktop/-/merge_requests/4117.patch
+patch -p4 -i /tmp/symlinks-italic.patch -d /usr/share/plasma/plasmoids/org.kde.desktopcontainment
 ################
-origin=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/
-folder=/etc/extensions/lockscreen-unblur/${origin}
-file=LockScreenUi.qml
-create
-perl -p0 -e 's/(hideClockWhenIdle\n +\})/$1 \*\// ; s/WallpaperFader/\/\* WallpaperFader/' "${origin}/${file}" | tee "${folder}/${file}" >/dev/null
+curl -sL -o /tmp/lockscreen-blur-toggle.patch https://invent.kde.org/plasma/plasma-desktop/-/merge_requests/4119.patch
+patch -p2 -i /tmp/lockscreen-blur-toggle.patch -d /usr/share/plasma/shells/org.kde.plasma.desktop/
 
 folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
 file=extension-release.lockscreen-unblur
@@ -67,14 +56,8 @@ dnf5 config-manager enable terra terra-extras terra-mesa
 kver="$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | sort -V | tail -n1)"
 dnf5 -y remove Sunshine
 dnf5 -y install "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
-    | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
+    | jq -r --arg ver "$fedora_ver" '.[0].assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
-mkdir /tmp/hermes
-curl -LsO "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
-    | jq -r '[.assets[].browser_download_url] |
-    (map(select(contains("tar.zst"))).[0]) // (map(select(contains("tar.zst"))) | sort[-1])')"
-tar --zstd -xvf hermes-streaming-*.tar.zst -C /tmp/hermes
-cp -r /tmp/hermes/usr/lib/* /usr/lib
 # Hermes-KMS
 git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
     -b "$(curl_gh 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms
