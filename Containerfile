@@ -25,7 +25,6 @@ FROM ghcr.io/ublue-os/aurora-dx:latest
 ## by the package manager.
 
 RUN rm /opt && mkdir /opt
-RUN mkdir -p /var/nix && ln -sf /var/nix /nix
 
 ### MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script

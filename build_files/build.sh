@@ -6,7 +6,8 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cd /tmp
 cp -avf "/ctx/system_files"/. /
-
+# Lix
+mkdir -p /var/nix && ln -sf /var/nix /nix
 ################----PERSONAL-START----################
 # Boilerplate
 # `:` == `true`
@@ -37,9 +38,17 @@ dnf5 config-manager enable terra terra-extras terra-mesa
 
 # Hermes
 kver="$(rpm -q --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | sort -V | tail -n1)"
+dnf5 -y remove sunshine
 dnf5 -y install "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
     | jq -r --arg ver "$fedora_ver" '[.assets[].browser_download_url] |
     (map(select(contains(".fc" + $ver))).[0]) // (map(select(contains(".fc"))) | sort[-1])')"
+mkdir /tmp/hermes
+curl -LsO "$(curl_gh https://api.github.com/repos/MrOz59/Hermes/releases/latest \
+    | jq -r '[.assets[].browser_download_url] |
+    (map(select(contains("tar.zst"))).[0]) // (map(select(contains("tar.zst"))) | sort[-1])')"
+tar --zstd -xvf hermes-streaming-*.tar.zst -C /tmp/hermes
+cp -r /tmp/hermes/usr/lib/* /usr/lib
+# Hermes-KMS
 git clone https://github.com/MrOz59/Hermes-KMS.git --single-branch \
     -b "$(curl_gh 'https://api.github.com/repos/MrOz59/Hermes-KMS/tags' | jq -r '.[0].name')" /tmp/hermes-kms
 cd /tmp/hermes-kms
