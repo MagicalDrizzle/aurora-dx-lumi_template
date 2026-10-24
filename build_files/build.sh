@@ -57,11 +57,11 @@ make modules-install KERNELRELEASE="${kver}" DESTDIR=/
 "/usr/lib/modules/${kver}/build/scripts/sign-file" sha512 /run/secrets/SB_KEY /run/secrets/SB_CERT \
     /usr/lib/modules/${kver}/extra/hermes-kms/hermes_kms.ko
 
-### Gaming
-dnf5 -y copr enable faugus/faugus-launcher
-dnf5 -y install faugus-launcher
-dnf5 config-manager disable copr:copr.fedorainfracloud.org:faugus:faugus-launcher
-dnf5 -y install steam mangohud gamescope scopebuddy protontricks
+### Gaming (Steam flatpak)
+#dnf5 -y copr enable faugus/faugus-launcher
+#dnf5 -y install faugus-launcher
+#dnf5 config-manager disable copr:copr.fedorainfracloud.org:faugus:faugus-launcher
+dnf5 -y install gamescope scopebuddy
 # ###
 
 # ProtonVPN (Terra)
