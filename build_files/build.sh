@@ -17,9 +17,9 @@ curl_gh() {
     "$@"
 }
 create() {
+    declare folder file
     if ! [[ -e ${folder} ]] ; then
-        mkdir -p ${folder}
-        touch ${folder}/${file}
+        mkdir -p "${folder}" && touch "${folder}/${file}"
     fi
 }
 fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
