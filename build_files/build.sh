@@ -7,6 +7,7 @@ set -ouex pipefail
 cd /tmp
 cp -avf "/ctx/system_files"/. /
 # Lix
+systemctl enable nix.mount
 ################----PERSONAL-START----################
 # Boilerplate
 # `:` == `true`
