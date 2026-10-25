@@ -72,7 +72,7 @@ if dnf5 -y install coolercontrol coolercontrold; then
 fi
 
 # nohang
-if dnf5 -y install --setopt=install_weak_deps=True nohang-nightly; then
+if dnf5 -y install --skip-unavailable nohang-nightly nohang-nightly-desktop; then
   systemctl mask systemd-oomd && systemctl enable nohang-desktop
 fi
 
