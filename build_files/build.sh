@@ -6,9 +6,6 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cd /tmp
 cp -avf "/ctx/system_files"/. /
-# Lix
-mkdir -p /var/nix
-systemctl enable nix.mount
 ################----PERSONAL-START----################
 # Boilerplate
 # `:` == `true`
