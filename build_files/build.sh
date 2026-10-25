@@ -7,7 +7,6 @@ set -ouex pipefail
 cd /tmp
 cp -avf "/ctx/system_files"/. /
 # Lix
-mkdir -p /var/nix && ln -sf /var/nix /nix
 ################----PERSONAL-START----################
 # Boilerplate
 # `:` == `true`
@@ -28,19 +27,10 @@ fedora_ver=$(rpm -E %fedora)    # 42, 43, 44...
 grep -qF defaultyes=True /etc/dnf/dnf.conf || printf '%s\n' defaultyes=True | tee -a /etc/dnf/dnf.conf
 
 # KDE customization
-#systemctl enable systemd-sysext
-################
 curl -sL -o /tmp/symlinks-italic.patch https://invent.kde.org/plasma/plasma-desktop/-/merge_requests/4117.patch
 patch -p4 -i /tmp/symlinks-italic.patch -d /usr/share/plasma/plasmoids/org.kde.desktopcontainment
-################
 curl -sL -o /tmp/lockscreen-blur-toggle.patch https://invent.kde.org/plasma/plasma-desktop/-/merge_requests/4119.patch
 patch -p2 -i /tmp/lockscreen-blur-toggle.patch -d /usr/share/plasma/shells/org.kde.plasma.desktop/
-
-folder=/etc/extensions/lockscreen-unblur/usr/lib/extension-release.d
-file=extension-release.lockscreen-unblur
-create
-printf '%s\n' ID=_any | tee "${folder}/${file}"
-################
 # End KDE customization
 
 # RPM Fusion
@@ -83,7 +73,7 @@ if dnf5 -y install coolercontrol coolercontrold; then
 fi
 
 # nohang
-if dnf5 -y install nohang-nightly nohang-nightly-desktop; then
+if dnf5 -y install nohang-nightly; then
   systemctl mask systemd-oomd && systemctl enable nohang-desktop
 fi
 
