@@ -72,13 +72,8 @@ if dnf5 -y install coolercontrol coolercontrold; then
 fi
 
 # nohang
-if dnf5 -y install nohang-nightly; then
-  systemctl mask systemd-oomd
-  if ! systemctl enable nohang-desktop; then
-    if dnf5 -y install nohang-nightly-desktop; then
-      systemctl enable nohang-desktop
-    fi
-  fi
+if dnf5 -y install --setopt=install_weak_deps=True nohang-nightly; then
+  systemctl mask systemd-oomd && systemctl enable nohang-desktop
 fi
 
 # RStudio
