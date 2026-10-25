@@ -73,7 +73,12 @@ fi
 
 # nohang
 if dnf5 -y install nohang-nightly; then
-  systemctl mask systemd-oomd && systemctl enable nohang-desktop
+  systemctl mask systemd-oomd
+  if ! systemctl enable nohang-desktop; then
+    if dnf5 -y install nohang-nightly-desktop; then
+      systemctl enable nohang-desktop
+    fi
+  fi
 fi
 
 # RStudio
